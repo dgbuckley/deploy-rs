@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: MPL-2.0
 
-use log::{debug, info};
+use log::{debug, error, info};
 use std::collections::HashMap;
 use std::path::Path;
 use std::process::Stdio;
@@ -74,7 +74,7 @@ pub async fn push_profile(data: PushProfileData<'_>) -> Result<(), PushProfileEr
 
     match show_derivation_output.status.code() {
         Some(0) => (),
-        a => return Err(PushProfileError::ShowDerivationExit(a)),
+        a => error!("{}", PushProfileError::ShowDerivationExit(a)),
     };
 
     let derivation_info: HashMap<&str, serde_json::value::Value> = serde_json::from_str(
@@ -131,7 +131,7 @@ pub async fn push_profile(data: PushProfileData<'_>) -> Result<(), PushProfileEr
 
     match build_exit_status.code() {
         Some(0) => (),
-        a => return Err(PushProfileError::BuildExit(a)),
+        a => error!("{}", PushProfileError::BuildExit(a)),
     };
 
     if !Path::new(
@@ -143,7 +143,7 @@ pub async fn push_profile(data: PushProfileData<'_>) -> Result<(), PushProfileEr
     )
     .exists()
     {
-        return Err(PushProfileError::DeployRsActivateDoesntExist);
+        error!("{}", PushProfileError::DeployRsActivateDoesntExist);
     }
 
     if !Path::new(
@@ -155,7 +155,7 @@ pub async fn push_profile(data: PushProfileData<'_>) -> Result<(), PushProfileEr
     )
     .exists()
     {
-        return Err(PushProfileError::ActivateRsDoesntExist);
+        error!("{}", PushProfileError::ActivateRsDoesntExist);
     }
 
     if let Ok(local_key) = std::env::var("LOCAL_KEY") {
@@ -176,7 +176,7 @@ pub async fn push_profile(data: PushProfileData<'_>) -> Result<(), PushProfileEr
 
         match sign_exit_status.code() {
             Some(0) => (),
-            a => return Err(PushProfileError::SignExit(a)),
+            a => error!("{}", PushProfileError::SignExit(a)),
         };
     }
 
@@ -222,7 +222,7 @@ pub async fn push_profile(data: PushProfileData<'_>) -> Result<(), PushProfileEr
 
     match copy_exit_status.code() {
         Some(0) => (),
-        a => return Err(PushProfileError::CopyExit(a)),
+        a => error!("{}", PushProfileError::CopyExit(a)),
     };
 
     Ok(())
