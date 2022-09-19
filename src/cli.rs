@@ -54,7 +54,7 @@ pub struct Opts {
 
     /// Skip the automatic pre-build checks
     #[clap(short, long)]
-    skip_checks: bool,
+    do_checks: bool,
 
     /// Override the SSH user with the given value
     #[clap(long)]
@@ -647,7 +647,7 @@ pub async fn run(args: Option<&ArgMatches>) -> Result<(), RunError> {
         warn!("A Nix version without flakes support was detected, support for this is work in progress");
     }
 
-    if !opts.skip_checks {
+    if opts.do_checks {
         for deploy_flake in &deploy_flakes {
             check_deployment(supports_flakes, deploy_flake.repo, &opts.extra_build_args).await?;
         }
